@@ -1,6 +1,8 @@
 const driver = require('bigchaindb-driver')
 const hexToBinary = require('hex-to-binary')
 var _bs = require('bs58');
+const util = require('util')
+
 
 const API_PATH = 'https://test.bigchaindb.com/api/v1/'
 
@@ -29,7 +31,7 @@ const tx = driver.Transaction.makeCreateTransaction(
 )
 
 const txSigned = driver.Transaction.signTransaction(tx, privateInner)
-console.log(txSigned)
+console.log(util.inspect(txSigned, {showHidden: false, depth: null}))
 
 const conn = new driver.Connection(API_PATH, { 
     app_id: 'b1d63ff3',
@@ -37,5 +39,6 @@ const conn = new driver.Connection(API_PATH, {
 })
 conn.postTransaction(txSigned)
     .then(() => conn.pollStatusAndFetchTransaction(txSigned.id))
+    .then(retrievedTx => console.log('\r\n********\r\nRetrive TX : ', util.inspect(retrievedTx, {showHidden: false, depth: null}), "\r\n*****\r\n"))
     .then(retrievedTx => console.log('Transaction', retrievedTx.id, 'successfully posted.'))
 
